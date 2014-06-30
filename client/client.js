@@ -1,19 +1,24 @@
-if (Meteor.isClient) {
-  Template.hello.greeting = function () {
-    return "Welcome to multihead.";
-  };
+Router.configure({
+  layoutTemplate: 'layout'
+});
 
-  Template.hello.events({
-    'click input': function () {
-      // template data, if any, is available in 'this'
-      if (typeof console !== 'undefined')
-        console.log("You pressed the button");
-    }
+Router.map(function () {
+  this.route('about'); // By default, path = '/about', template = 'about'
+  this.route('home', {
+    path: '/', //overrides the default '/home'
   });
-}
-
-if (Meteor.isServer) {
-  Meteor.startup(function () {
-    // code to run on server at startup
+  this.route('slides', {
+    data: function () {
+      return Slides.find()
+    } //set template data context
   });
-}
+  this.route('slide', {
+    path: '/article/:_id',
+    data: function () {
+      return Slides.findOne({
+        _id: this.params._id
+      })
+    },
+    template: 'slideView'
+  });
+});
